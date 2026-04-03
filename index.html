@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>会议访客报名</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: #F0F4F8;
+    min-height: 100vh;
+    color: #1A2332;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1A3A5C 0%, #0F2540 100%);
+    padding: 32px 20px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.12);
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.08);
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.2);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: #D4AF37;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    color: #FFFFFF;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header p {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .form-card {
+    background: #FFFFFF;
+    margin: -24px 16px 0;
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1A3A5C;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 24px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #EEF1F5;
+  }
+
+  .section-title:first-child { margin-top: 0; }
+
+  .field-group { margin-bottom: 16px; }
+
+  .field-label {
+    font-size: 13px;
+    color: #5A6678;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .required { color: #E24B4A; font-size: 14px; }
+
+  .field-input {
+    width: 100%;
+    height: 48px;
+    border: 1.5px solid #E4E9F0;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 15px;
+    color: #1A2332;
+    background: #F8FAFC;
+    transition: border-color 0.2s, background 0.2s;
+    font-family: inherit;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .field-input:focus {
+    border-color: #1A3A5C;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.08);
+  }
+
+  select.field-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6678' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+
+  .gender-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .gender-option {
+    position: relative;
+  }
+
+  .gender-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .gender-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    border: 1.5px solid #E4E9F0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #5A6678;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #F8FAFC;
+  }
+
+  .gender-option input:checked + .gender-label {
+    background: #1A3A5C;
+    border-color: #1A3A5C;
+    color: #FFFFFF;
+    font-weight: 500;
+  }
+
+  .transport-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .transport-option {
+    position: relative;
+  }
+
+  .transport-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .transport-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 8px;
+    border: 1.5px solid #E4E9F0;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #5A6678;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #F8FAFC;
+    gap: 6px;
+  }
+
+  .transport-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .transport-option input:checked + .transport-label {
+    background: #EEF4FB;
+    border-color: #1A3A5C;
+    color: #1A3A5C;
+    font-weight: 500;
+  }
+
+  .companion-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1.5px solid #E4E9F0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #F8FAFC;
+    height: 48px;
+  }
+
+  .stepper-btn {
+    width: 48px;
+    height: 100%;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    color: #1A3A5C;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .stepper-btn:active { background: #E4E9F0; }
+
+  .stepper-value {
+    flex: 1;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1A2332;
+    border: none;
+    background: transparent;
+    outline: none;
+  }
+
+  .stepper-divider {
+    width: 1px;
+    height: 28px;
+    background: #E4E9F0;
+  }
+
+  .submit-btn {
+    width: 100%;
+    height: 52px;
+    background: linear-gradient(135deg, #1A3A5C 0%, #0F2540 100%);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 28px;
+    font-family: inherit;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.2s;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  }
+
+  .submit-btn:active { opacity: 0.88; transform: scale(0.99); }
+
+  .gold-accent {
+    display: block;
+    width: 32px;
+    height: 3px;
+    background: linear-gradient(90deg, #D4AF37, #F0D060);
+    border-radius: 2px;
+    margin: 8px auto 0;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: #8A96A3;
+    margin-top: 20px;
+    padding-bottom: 32px;
+  }
+
+  .success-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(26, 58, 92, 0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .success-overlay.show { display: flex; }
+
+  .success-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 36px 28px;
+    text-align: center;
+    margin: 20px;
+    max-width: 320px;
+    width: 100%;
+  }
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #1A3A5C, #0F2540);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+
+  .success-icon svg { width: 30px; height: 30px; }
+
+  .success-card h2 { font-size: 20px; color: #1A2332; margin-bottom: 8px; }
+
+  .success-card p { font-size: 14px; color: #5A6678; line-height: 1.6; }
+
+  .success-close {
+    margin-top: 24px;
+    width: 100%;
+    height: 46px;
+    background: #1A3A5C;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .field-error {
+    font-size: 12px;
+    color: #E24B4A;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .field-input.error { border-color: #E24B4A; background: #FFF5F5; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">VISITOR REGISTRATION</div>
+  <h1>会议访客报名登记</h1>
+  <p>请如实填写以下信息，以便会务组安排接待</p>
+  <span class="gold-accent"></span>
+</div>
+
+<div class="form-card">
+
+  <div class="section-title">基本信息</div>
+
+  <div class="field-group">
+    <div class="field-label"><span class="required">*</span> 姓名</div>
+    <input class="field-input" id="name" type="text" placeholder="请输入您的姓名" />
+    <div class="field-error" id="name-err">请填写姓名</div>
+  </div>
+
+  <div class="field-group">
+    <div class="field-label"><span class="required">*</span> 性别</div>
+    <div class="gender-group">
+      <label class="gender-option">
+        <input type="radio" name="gender" value="male">
+        <span class="gender-label">男</span>
+      </label>
+      <label class="gender-option">
+        <input type="radio" name="gender" value="female">
+        <span class="gender-label">女</span>
+      </label>
+      <label class="gender-option">
+        <input type="radio" name="gender" value="other">
+        <span class="gender-label">保密</span>
+      </label>
+    </div>
+    <div class="field-error" id="gender-err">请选择性别</div>
+  </div>
+
+  <div class="field-group">
+    <div class="field-label"><span class="required">*</span> 所属企业</div>
+    <input class="field-input" id="company" type="text" placeholder="请输入您所在的企业/单位名称" />
+    <div class="field-error" id="company-err">请填写所属企业</div>
+  </div>
+
+  <div class="section-title">出行信息</div>
+
+  <div class="field-group">
+    <div class="field-label"><span class="required">*</span> 出行方式</div>
+    <div class="transport-grid">
+      <label class="transport-option">
+        <input type="radio" name="transport" value="car">
+        <span class="transport-label">
+          <span class="transport-icon">🚗</span>自驾
+        </span>
+      </label>
+      <label class="transport-option">
+        <input type="radio" name="transport" value="train">
+        <span class="transport-label">
+          <span class="transport-icon">🚄</span>高铁/火车
+        </span>
+      </label>
+      <label class="transport-option">
+        <input type="radio" name="transport" value="plane">
+        <span class="transport-label">
+          <span class="transport-icon">✈️</span>飞机
+        </span>
+      </label>
+      <label class="transport-option">
+        <input type="radio" name="transport" value="bus">
+        <span class="transport-label">
+          <span class="transport-icon">🚌</span>大巴/公交
+        </span>
+      </label>
+    </div>
+    <div class="field-error" id="transport-err">请选择出行方式</div>
+  </div>
+
+  <div class="field-group">
+    <div class="field-label"><span class="required">*</span> 随行人数（含本人）</div>
+    <div class="companion-stepper">
+      <button class="stepper-btn" onclick="changeCount(-1)">−</button>
+      <div class="stepper-divider"></div>
+      <span class="stepper-value" id="count-display">1</span>
+      <div class="stepper-divider"></div>
+      <button class="stepper-btn" onclick="changeCount(1)">+</button>
+    </div>
+  </div>
+
+  <div class="section-title">返程信息</div>
+
+  <div class="field-group">
+    <div class="field-label"><span class="required">*</span> 预计返回时间</div>
+    <input class="field-input" id="return-time" type="datetime-local" />
+    <div class="field-error" id="return-err">请选择返回时间</div>
+  </div>
+
+  <button class="submit-btn" onclick="submitForm()">提交报名</button>
+
+</div>
+
+<div class="footer-note">
+  本次信息仅用于会议接待安排，请放心填写
+</div>
+
+<div class="success-overlay" id="success-overlay">
+  <div class="success-card">
+    <div class="success-icon">
+      <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 15l7 7 11-11" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2>报名成功！</h2>
+    <p>您的报名信息已提交，会务组将提前做好接待准备，欢迎您的到来！</p>
+    <div style="margin-top:16px; padding:12px; background:#F8FAFC; border-radius:10px; font-size:13px; color:#5A6678; text-align:left;">
+      <div id="summary"></div>
+    </div>
+    <button class="success-close" onclick="closeSuccess()">完成</button>
+  </div>
+</div>
+
+<script>
+  let companionCount = 1;
+
+  function changeCount(delta) {
+    companionCount = Math.max(1, Math.min(20, companionCount + delta));
+    document.getElementById('count-display').textContent = companionCount;
+  }
+
+  function getRadioValue(name) {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    return checked ? checked.value : null;
+  }
+
+  const transportLabels = { car: '自驾', train: '高铁/火车', plane: '飞机', bus: '大巴/公交' };
+  const genderLabels = { male: '男', female: '女', other: '保密' };
+
+  function showError(id, inputId) {
+    document.getElementById(id).style.display = 'block';
+    const el = document.getElementById(inputId);
+    if (el) el.classList.add('error');
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.field-error').forEach(e => e.style.display = 'none');
+    document.querySelectorAll('.field-input').forEach(e => e.classList.remove('error'));
+  }
+
+  function submitForm() {
+    clearErrors();
+    let valid = true;
+
+    const name = document.getElementById('name').value.trim();
+    const company = document.getElementById('company').value.trim();
+    const gender = getRadioValue('gender');
+    const transport = getRadioValue('transport');
+    const returnTime = document.getElementById('return-time').value;
+
+    if (!name) { showError('name-err', 'name'); valid = false; }
+    if (!gender) { document.getElementById('gender-err').style.display = 'block'; valid = false; }
+    if (!company) { showError('company-err', 'company'); valid = false; }
+    if (!transport) { document.getElementById('transport-err').style.display = 'block'; valid = false; }
+    if (!returnTime) { showError('return-err', 'return-time'); valid = false; }
+
+    if (!valid) return;
+
+    const dt = new Date(returnTime);
+    const formatted = `${dt.getFullYear()}年${dt.getMonth()+1}月${dt.getDate()}日 ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+
+    document.getElementById('summary').innerHTML = `
+      <div style="display:grid;gap:6px;">
+        <div style="display:flex;justify-content:space-between;"><span>姓名</span><span style="color:#1A2332;font-weight:500;">${name}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span>性别</span><span style="color:#1A2332;font-weight:500;">${genderLabels[gender]}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span>企业</span><span style="color:#1A2332;font-weight:500;">${company}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span>出行方式</span><span style="color:#1A2332;font-weight:500;">${transportLabels[transport]}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span>随行人数</span><span style="color:#1A2332;font-weight:500;">${companionCount} 人</span></div>
+        <div style="display:flex;justify-content:space-between;"><span>返回时间</span><span style="color:#1A2332;font-weight:500;">${formatted}</span></div>
+      </div>`;
+
+    document.getElementById('success-overlay').classList.add('show');
+  }
+
+  function closeSuccess() {
+    document.getElementById('success-overlay').classList.remove('show');
+    document.getElementById('name').value = '';
+    document.getElementById('company').value = '';
+    document.getElementById('return-time').value = '';
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    companionCount = 1;
+    document.getElementById('count-display').textContent = '1';
+  }
+
+  const now = new Date();
+  now.setMinutes(0, 0, 0);
+  now.setDate(now.getDate() + 1);
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('return-time').min = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T00:00`;
+</script>
+</body>
+</html>
